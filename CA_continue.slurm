@@ -5,7 +5,7 @@
 #SBATCH -p normal		# Queue name
 #SBATCH -N 1			# Total number of nodes requested
 #SBATCH -n 1 			# Total number of mpi tasks requested (normally 1)
-#SBATCH -t 05:00:00		# Run time (hh:mm:ss)
+#SBATCH -t 07:00:00		# Run time (hh:mm:ss)
 
 #____________modules_____________
 module unload xalt
@@ -27,7 +27,7 @@ BASE="/scratch/09196/reneem/DOX_ChIP/fastq_files"
 
 MERGED="$BASE/merged_files"
 OUT="$BASE/cut-adapt_files"
-SAMPLES="/scratch/09196/reneem/DOX_ChIP/sample_names.txt"
+SAMPLES="/scratch/09196/reneem/DOX_ChIP/sample_names_short.txt"
 mkdir -p "$OUT"
 
 
