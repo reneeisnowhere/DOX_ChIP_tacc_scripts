@@ -17,7 +17,7 @@ module load biocontainers
 ### ------------Variables -----------
 
 BOWTIE2_SIF="/scratch/09196/reneem/DOX_ChIP/bowtie2.sif"
-BT2_INDEX="/scratch/09196/reneem/GRCh38/bowtie2_index/GRCh38_noalt_as"
+BT2_INDEX="/scratch/09196/reneem/GRCh38/bowtie2_index/GRCh38_noalt_as/GRCh38_noalt_as"
 ### Location!
 
 cd /scratch/09196/reneem/DOX_ChIP
