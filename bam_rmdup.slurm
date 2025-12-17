@@ -4,7 +4,7 @@
 #SBATCH --job-name=ChIP_bam_processing
 #SBATCH -o rmdup.%j		# Name of stdout output file (%j expantds to jobID)
 #SBATCH -p normal		# Queue name
-#SBATCH --array=1-48%8           # 48 BAMs total, max 8 running simultaneously
+#SBATCH --array=1-4%4           # array=1-48%8 (48 bams 8 simul) changed to 4 BAMs total, max 4 running simultaneously
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=16       # threads per BAM
@@ -35,7 +35,8 @@ SUMMARY="$OUT_DIR/summary_${SLURM_ARRAY_TASK_ID}.csv"
 echo "Sample,Start,End,Input_Count,NoChrM_Count,Dedup_Count" > "$SUMMARY"
 #-----------------Select BAM for this task ----------------
 
-BAM_LIST=("$BAM_DIR"/*.bam)
+#BAM_LIST=("$BAM_DIR"/*.bam)
+BAM_LIST=("$BAM_DIR"/MCW_SP_ChIP{71..74}.proper_unique.bam)
 bam_file="${BAM_LIST[$SLURM_ARRAY_TASK_ID-1]}"   # array IDs start at 1
 base=$(basename "$bam_file" .bam)
 

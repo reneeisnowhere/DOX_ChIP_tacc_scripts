@@ -26,14 +26,15 @@ mkdir -p "$OUT_DIR"
 # Threads/memory
 THREADS=128
 MEM_PER_THREAD=$((192 / THREADS))G   # 192 GB node
-
+FILES=("$SAM_DIR/MCW_SP_ChIP71.sam" "$SAM_DIR/MCW_SP_ChIP72.sam" "$SAM_DIR/MCW_SP_ChIP73.sam" "$SAM_DIR/MCW_SP_ChIP74.sam")
 # Summary CSV
 SUMMARY="$OUT_DIR/full_summary_counts.csv"
 echo "Sample,Start,End,Properly_Paired,Properly_Paired_Unique,Properly_Paired_Unique_noChrM" > "$SUMMARY"
 
 # ----------------- Loop through SAM files -----------------
-for sam_file in "$SAM_DIR"/*.sam; do
-    base=$(basename "$sam_file" .sam)
+#for sam_file in "$SAM_DIR"/*.sam; do
+for sam_files in "${FILES[@]}"; do 
+base=$(basename "$sam_file" .sam)
     start_time=$(date +"%Y-%m-%d %H:%M:%S")
 
     echo "$base: Start at $start_time"
