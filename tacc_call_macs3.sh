@@ -9,7 +9,7 @@ echo "#!/bin/bash" > "$MACS3_SCRIPT"
 # Skip header line and loop through pairs
 tail -n +2 "$PAIR_FILE" | while IFS=$'\t' read -r CHIP INPUT TX IND AB; do
     # Construct output folder name
-    OUT_DIR="macs3_out/${CHIP}_${TX}_${AB}_${IND}"
+    OUT_DIR="/scratch/09196/reneem/DOX_ChIP/macs3_out/${CHIP}_${TX}_${AB}_${IND}"
     mkdir -p "$OUT_DIR"
 
     # MACS3 callpeak command

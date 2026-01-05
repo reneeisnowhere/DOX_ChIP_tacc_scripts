@@ -12,7 +12,10 @@
 
 
 
-
+module load tacc-apptainer
+module load biocontainers
+module unload xalt
+module load bedtools
 
 set -euo pipefail
 
@@ -25,8 +28,8 @@ SAMTOOLS_CONTAINER="/scratch/09196/reneem/DOX_ChIP/samtools_1.9--h91753b0_5.sif"
 mkdir -p "$FILTERED_DIR"
 
 # ---------------- Loop through BAM files ----------------
-for BAM in "$BAM_DIR"/*.proper_unique.noChroM.sorted.dedup.bam; do
-    SAMPLE=$(basename "$BAM" .proper_unique.noChroM.sorted.dedup.bam)
+for BAM in "$BAM_DIR"/*.proper_unique.noChrM.sorted.dedup.bam; do
+    SAMPLE=$(basename "$BAM" .proper_unique.noChrM.sorted.dedup.bam)
 
     echo "Processing sample: $SAMPLE"
     
@@ -40,7 +43,7 @@ for BAM in "$BAM_DIR"/*.proper_unique.noChroM.sorted.dedup.bam; do
     # Filter blacklist regions if filtered BAM doesn't exist
     if [[ ! -f "$FILTERED_BAM" ]]; then
         echo "  Filtering blacklist regions..."
-        apptainer exec "$SAMTOOLS_CONTAINER" samtools view -@ 64 -b -U /dev/null -L "$BLACKLIST" "$BAM" > "$FILTERED_BAM"
+       bedtools intersect -v -abam "$BAM" -b "$BLACKLIST" > "$FILTERED_BAM"
     fi
 
     # Count reads in filtered BAM
