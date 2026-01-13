@@ -18,12 +18,12 @@ mkdir -p "$DEST_DIR"
 
 # Copy only .sh and .slurm files, preserving directory structure (but flattening is also possible)
 for SRC in "${SRC_DIRS[@]}"; do
-    find "$SRC" -type f \( -name "*.sh" -o -name "*.slurm" \) -exec cp --update {} "$DEST_DIR" \;
+    find "$SRC" -type f \( -name "*.sh" -o -name "*.slurm" -o -name "*commands*.txt" \) -exec cp --update {} "$DEST_DIR" \;
 done
 
 # Go to repo and commit changes
 cd "$DEST_DIR" || exit
-git add *.sh *.slurm
+git add *.sh *.slurm *.txt
 
 # Commit only if there are changes
 if ! git diff --cached --quiet; then

@@ -17,7 +17,7 @@ module load macs3
 module load python3
 
 
-CMD=$(sed -n "${SLURM_ARRAY_TASK_ID}p" macs3_commands.txt)
+CMD=$(sed -n "${SLURM_ARRAY_TASK_ID}p" macs3_commands05.txt)
 
 # Run it
 eval $CMD
