@@ -19,13 +19,19 @@ BASE="/scratch/09196/reneem/DOX_ChIP/fastq_files"
 MERGED="${BASE}/merged_files"
 OUT="${BASE}/cut-adapt_files"
 FASTQC_OUT="${OUT}/fastqc"
-SAMPLES="/scratch/09196/reneem/DOX_ChIP/sample_names_short.txt"
+SAMPLES="/scratch/09196/reneem/DOX_ChIP/DOX_ChIP_samplenames.txt"
 
 mkdir -p "$OUT"
 mkdir -p "$FASTQC_OUT"
+### because the samples file has a header:
+
+line_number=$((SLURM_ARRAY_TASK_ID + 1))
 
 # Select one sample from the sample-name file.
-sample=$(sed -n "${SLURM_ARRAY_TASK_ID}p" "$SAMPLES" | tr -d '\r')
+sample=$(awk -v line="$line_number" 'NR == line {print $1}' "$SAMPLES" | tr -d '\r')
+
+echo "Array task ${SLURM_ARRAY_TASK_ID} selected: ${sample}"
+
 
 if [[ -z "$sample" ]]; then
     echo "No sample found for array task ${SLURM_ARRAY_TASK_ID}"
