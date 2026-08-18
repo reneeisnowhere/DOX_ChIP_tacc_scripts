@@ -24,7 +24,7 @@ BT2_INDEX="/scratch/09196/reneem/GRCh38/bowtie2_index/GRCh38_noalt_as/GRCh38_noa
 
 BASE_DIR="/scratch/09196/reneem/DOX_ChIP"
 TRIMFILES="${BASE_DIR}/fastq_files/cut-adapt_files"
-SAMPLES="${BASE_DIR}/DOX_ChIP_samplenames.txt"
+SAMPLES="${BASE_DIR}/DOX_ChIP_sampleIDs.txt"
 SAM_DIR="${BASE_DIR}/sam_folder"
 
 mkdir -p "${BASE_DIR}/logs"

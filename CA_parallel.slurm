@@ -19,7 +19,7 @@ BASE="/scratch/09196/reneem/DOX_ChIP/fastq_files"
 MERGED="${BASE}/merged_files"
 OUT="${BASE}/cut-adapt_files"
 FASTQC_OUT="${OUT}/fastqc"
-SAMPLES="/scratch/09196/reneem/DOX_ChIP/DOX_ChIP_samplenames.txt"
+SAMPLES="/scratch/09196/reneem/DOX_ChIP/DOX_ChIP_sampleIDs.txt"
 
 mkdir -p "$OUT"
 mkdir -p "$FASTQC_OUT"
@@ -35,6 +35,11 @@ echo "Array task ${SLURM_ARRAY_TASK_ID} selected: ${sample}"
 
 if [[ -z "$sample" ]]; then
     echo "No sample found for array task ${SLURM_ARRAY_TASK_ID}"
+    exit 1
+fi
+
+if [[ "$sample" =~ [[:space:]] ]]; then
+    echo "ERROR: sample contains whitespace: >>>$sample<<<"
     exit 1
 fi
 
