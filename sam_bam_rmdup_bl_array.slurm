@@ -6,9 +6,9 @@
 #SBATCH -p normal		# Queue name
 #SBATCH -N 1			# Total number of nodes requested
 #SBATCH -n 1 			# Total number of mpi tasks requested (normally 1)
-#SBATCH -t 05:00:00		# Run time (hh:mm:ss)
+#SBATCH -t 02:00:00		# Run time (hh:mm:ss)
 #SBATCH --cpus-per-task=16
-#SBATCH --array=1-2%2
+#SBATCH --array=1-48%8
 
 
 
@@ -41,7 +41,7 @@ THREADS="${SLURM_CPUS_PER_TASK}"
 
 MEM_PER_THREAD="2G"
 
-export _JAVA_OPTIONS="Xmx56g -Djava.io.tmpdir=${TMP_DIR}"
+export _JAVA_OPTIONS="-Xmx56g -Djava.io.tmpdir=${TMP_DIR}"
 #--------------------- Select one SAM file -------------------------------
 sam_name=$(sed -n "${SLURM_ARRAY_TASK_ID}p" "$SAMPLES" | tr -d '\r')
 
@@ -83,6 +83,9 @@ dedup_bam="${OUT_DIR}/${base}.proper_MAPQ30.canonical.sorted.dedup.bam"
 metrics="${OUT_DIR}/${base}.dedup.metrics.txt"
 name_sorted_bam="${OUT_DIR}/${base}.dedup.namesorted.bam"
 noblack_name_bam="${OUT_DIR}/${base}.dedup.noblack.namesorted.bam"
+final_bam="${OUT_DIR}/${base}.proper_MAPQ30.canonical.dedup.noblack.sorted.bam"
+
+
 
 summary_file="${SUMMARY_DIR}/${base}.summary.csv"
 
@@ -113,7 +116,7 @@ echo "Raw properly paired reads: ${raw_proper_count}"
 
 echo "Step 1: filtering proper pairs and MAP1 >= 30..."
 
-apptainer exec "$SIF_PATH" samtools view -@ "$THREADS" -b -f 0x2 -F 780 -q 30 -o "$filtered_bam" "$sam_file"
+#apptainer exec "$SIF_PATH" samtools view -@ "$THREADS" -b -f 0x2 -F 780 -q 30 -o "$filtered_bam" "$sam_file"
 
 mapq_count=$(
     apptainer exec "$SIF_PATH" \
@@ -133,14 +136,15 @@ echo "After MAPQ/filtering: ${mapq_count}"
 echo "Step 2: Restricting to canonical chromosomes and sorting..."
 
 
-apptainer exec "$SIF_PATH" bash -c " 
-set -o pipefail
+#apptainer exec "$SIF_PATH" bash -c " 
+#set -o pipefail
+#
+#samtools view -@ '${THREADS}' -b -L '${CHRS}' '${filtered_bam}' | \
+#	samtools sort -@ '${THREADS}' -m '${MEM_PER_THREAD}' -o '${canonical_bam}' \
+#	-
+#"
 
-samtools view -@ '${THREADS}' -b -L '${CHRS}' '${filtered_bam}' | \
-	samtools sort -@ '${THREADS}' -m '${MEM_PER_THREAD}' -o '${canonical_bam}' \
-	-
-"
-#--------------INDEX final BAM-------------------------
+#--------------INDEX canonical BAM-------------------------
 
 apptainer exec "$SIF_PATH" samtools index "$canonical_bam"
 
@@ -153,15 +157,15 @@ echo "After canoncial chromosome filtering: ${canonical_count}"
 #------------------------------------------------
 #Step 3 remove pcr/optical dups with GATK MarkDuplicates
 
-echo "Step 3: Removing duplicates with GATK MarkDuplicates..."
+#echo "Step 3: Removing duplicates with GATK MarkDuplicates..."
 
-gatk MarkDuplicates \
-    -I "$canonical_bam" \
-    -O "$dedup_bam" \
-    -M "$metrics" \
-    --REMOVE_DUPLICATES true \
-    --CREATE_INDEX true \
-    --TMP_DIR "$TMP_DIR"
+#gatk MarkDuplicates \
+#    -I "$canonical_bam" \
+#    -O "$dedup_bam" \
+#    -M "$metrics" \
+#    --REMOVE_DUPLICATES true \
+#    --CREATE_INDEX true \
+#    --TMP_DIR "$TMP_DIR"
 
 
 dedup_count=$(
@@ -182,11 +186,10 @@ echo "After duplicate removal: ${dedup_count}"
 # ============================================================
 
 echo "Step 4: Name-sorting for paired-end blacklist filtering..."
-    apptainer exec "$SIF_PATH" samtools sort -n -@ "$THREADS" -m "$MEM_PER_THREAD" -o "$name_sorted_bam" "$dedup_bam")
-
+#   apptainer exec "$SIF_PATH" samtools sort -n -@ "$THREADS" -m "$MEM_PER_THREAD" -o "$name_sorted_bam" "$dedup_bam"
 echo "Removing read pairs overlapping blacklist..."
 
-bedtools pairtobed -abam "$name_sorted_bam" -b "$BLACKLIST" -type neither > "$noblack_name_bam"
+#bedtools pairtobed -abam "$name_sorted_bam" -b "$BLACKLIST" -type neither > "$noblack_name_bam"
 
 
 # ============================================================
@@ -216,7 +219,7 @@ blacklist_count=$(
 
 echo "After blacklist removal: ${blacklist_count}"
 
-#________------------------------ calculate read removed at each step
+#------------------------ calculate read removed at each step
 
 removed_mapq=$(( raw_proper_count - mapq_count ))
 
@@ -264,7 +267,7 @@ rm -f \
     "$noblack_name_bam"
 
 
-[200~# ============================================================
+# ============================================================
 # Finish
 # ============================================================
 
