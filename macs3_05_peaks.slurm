@@ -6,8 +6,8 @@
 #SBATCH -p normal		# Queue name
 #SBATCH -N 1
 #SBATCH -n 16
-#SBATCH --array=3-36%5
-#SBATCH -t 01:30:00
+#SBATCH --array=1-36%5
+#SBATCH -t 02:00:00
 
 # ----------------- Modules -----------------
 module unload xalt
@@ -17,8 +17,7 @@ module load macs3
 module load python3
 
 
-CMD=$(sed -n "${SLURM_ARRAY_TASK_ID}p" macs3_q05_commands.txt)
-
+CMD=$(sed -n "$((SLURM_ARRAY_TASK_ID + 1))p" macs3_callpeak_commands_MAPQ1_05.sh)
 # Run it
 echo "Running command ${SLURM_ARRAY_TASK_ID}:"
 echo "$CMD"

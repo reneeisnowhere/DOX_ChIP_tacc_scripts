@@ -8,13 +8,21 @@
 #SBATCH -t 04:00:00
 #SBATCH --cpus-per-task=16
 
-set -euo pipefail
+
+set +u
+
+
 
 module unload xalt
 module load tacc-apptainer
 module load biocontainers
 module load gatk
 module load bedtools
+
+set -e
+set -o pipefail
+set -u
+
 
 SAM_DIR="/scratch/09196/reneem/DOX_ChIP/sam_folder"
 OUT_DIR="/scratch/09196/reneem/DOX_ChIP/test_old_ChIP44_50"
